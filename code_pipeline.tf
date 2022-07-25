@@ -170,8 +170,8 @@ resource "aws_codepipeline" "this" {
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        RepositoryName = var.nepositoryname
-        BranchName     = var.nranchname
+        RepositoryName = var.repositoryname
+        BranchName     = var.branchname
         
       }
     }

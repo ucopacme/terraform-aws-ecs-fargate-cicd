@@ -8,6 +8,16 @@ variable "cluster_name" {
   type        = string
   default     = null
 }
+variable "repositoryname" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
+variable "branchname" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
 variable "execution_role" {
   description = "The resource name."
   type        = string

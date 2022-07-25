@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "assume_by_codedeploy" {
 
 resource "aws_iam_role" "codedeploy" {
   name               = "${var.name}-codedeploy"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_by_codedeploy.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_by_codedeploy.json
 }
 
 data "aws_iam_policy_document" "codedeploy" {
@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "codedeploy" {
 }
 
 resource "aws_iam_role_policy" "codedeploy" {
-  role   = "${aws_iam_role.codedeploy.name}"
-  policy = "${data.aws_iam_policy_document.codedeploy.json}"
+  role   = aws_iam_role.codedeploy.name
+  policy = data.aws_iam_policy_document.codedeploy.json
 }
 
 resource "aws_codedeploy_app" "this" {
@@ -76,10 +76,10 @@ resource "aws_codedeploy_app" "this" {
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
-  app_name               = "${aws_codedeploy_app.this.name}"
+  app_name               = aws_codedeploy_app.this.name
   deployment_group_name  = "${var.name}-service-deploy-group"
   deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
-  service_role_arn       = "${aws_iam_role.codedeploy.arn}"
+  service_role_arn       = aws_iam_role.codedeploy.arn
 
   blue_green_deployment_config {
     deployment_ready_option {

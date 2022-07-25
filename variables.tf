@@ -13,6 +13,12 @@ variable "execution_role" {
   type        = string
   default     = null
 }
+
+variable "listener_arns" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
 variable "IMAGE_REPO_NAME" {
   description = "The resource name."
   type        = string

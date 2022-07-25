@@ -8,6 +8,11 @@ variable "cluster_name" {
   type        = string
   default     = null
 }
+variable "execution_role" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
 variable "IMAGE_REPO_NAME" {
   description = "The resource name."
   type        = string

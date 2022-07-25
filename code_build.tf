@@ -116,12 +116,12 @@ resource "aws_codebuild_project" "this" {
 
     environment_variable {
       name  = "AWS_ACCOUNT_ID"
-      value = "${var.aws_account_id}"
+      value = var.aws_account_id
     }
 
     environment_variable {
       name  = "AWS_DEFAULT_REGION"
-      value = "${var.region}"
+      value = var.region
     }
 
     environment_variable {

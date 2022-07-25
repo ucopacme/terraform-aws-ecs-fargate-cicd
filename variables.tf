@@ -3,8 +3,29 @@ variable "name" {
   default     = "kk-test"
 }
 
-
 variable "cluster_name" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
+variable "IMAGE_REPO_NAME" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
+variable "SERVICE_PORT" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
+
+variable "compute_type" {
+  description = "The resource name."
+  type        = string
+  default     = null
+}
+
+variable "MEMORY_RESV" {
   description = "The resource name."
   type        = string
   default     = null

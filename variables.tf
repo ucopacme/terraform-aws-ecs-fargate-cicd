@@ -21,12 +21,12 @@ variable "listener_arns" {
 }
 variable "target_group_0" {
   description = "The resource name."
-  type        = list(string)
+  type        = string
   default     = null
 }
 variable "target_group_1" {
   description = "The resource name."
-  type        = list(string)
+  type        = string
   default     = null
 }
 

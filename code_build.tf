@@ -104,14 +104,14 @@ resource "aws_codebuild_project" "this" {
   }
 
   environment {
-    compute_type    = "BUILD_GENERAL1_SMALL"
+    compute_type    = var.compute_type
     image           = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = true
 
     environment_variable {
       name  = "IMAGE_REPO_NAME"
-      value = "944706592399.dkr.ecr.us-west-2.amazonaws.com/ecs-last-test"
+      value = var.IMAGE_REPO_NAME
     }
 
     environment_variable {
@@ -131,12 +131,12 @@ resource "aws_codebuild_project" "this" {
 
     environment_variable {
       name  = "SERVICE_PORT"
-      value = 80
+      value = var.SERVICE_PORT
     }
 
     environment_variable {
       name  = "MEMORY_RESV"
-      value = 512
+      value = var.MEMORY_RESV
     }
   }
 

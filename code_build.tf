@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "assume_by_codebuild" {
 
 resource "aws_iam_role" "codebuild" {
   name               = "${var.name}-codebuild"
-  assume_role_policy = "data.aws_iam_policy_document.assume_by_codebuild.json"
+  assume_role_policy = data.aws_iam_policy_document.assume_by_codebuild.json
 }
 
 data "aws_iam_policy_document" "codebuild" {
@@ -91,7 +91,7 @@ data "aws_iam_policy_document" "codebuild" {
 
 resource "aws_iam_role_policy" "codebuild" {
   role   = "${aws_iam_role.codebuild.name}"
-  policy = "data.aws_iam_policy_document.codebuild.json"
+  policy = data.aws_iam_policy_document.codebuild.json
 }
 
 resource "aws_codebuild_project" "this" {

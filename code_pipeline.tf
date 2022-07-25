@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "pipeline" {
   bucket = "${var.name}-codepipeline-bucket"
+  tags = var.tags
   
   server_side_encryption_configuration {
     rule {
@@ -9,6 +10,15 @@ resource "aws_s3_bucket" "pipeline" {
     }
   }
 
+ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = join("", aws_s3_bucket.pipeline.id)
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
+    }
+  }
+}
   policy = <<POLICY
 {
   "Version": "2012-10-17",

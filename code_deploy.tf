@@ -59,8 +59,7 @@ data "aws_iam_policy_document" "codedeploy" {
     actions = ["iam:PassRole"]
 
     resources = [
-      var.execution_role,
-      "arn:aws:iam::944706592399:role/chs-dev-ecs_ecsTaskRole",
+      var.execution_role
     ]
   }
 }

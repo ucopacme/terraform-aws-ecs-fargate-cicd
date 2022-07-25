@@ -90,14 +90,14 @@ data "aws_iam_policy_document" "codebuild" {
 }
 
 resource "aws_iam_role_policy" "codebuild" {
-  role   = "${aws_iam_role.codebuild.name}"
+  role   = aws_iam_role.codebuild.name
   policy = data.aws_iam_policy_document.codebuild.json
 }
 
 resource "aws_codebuild_project" "this" {
   name         = "${var.name}-codebuild"
   description  = "Codebuild for the ECS Green/Blue ${var.name} app"
-  service_role = "${aws_iam_role.codebuild.arn}"
+  service_role = aws_iam_role.codebuild.arn
 
   artifacts {
     type = "CODEPIPELINE"

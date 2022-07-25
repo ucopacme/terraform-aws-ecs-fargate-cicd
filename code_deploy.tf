@@ -104,7 +104,7 @@ resource "aws_codedeploy_deployment_group" "this" {
   load_balancer_info {
     target_group_pair_info {
       prod_traffic_route {
-        listener_arns = ["arn:aws:elasticloadbalancing:us-west-2:944706592399:listener/app/test-dev-alb/9cadac78a79001a0/bf6dd2a5634660a4"]
+        listener_arns = var.listener_arns
       }
 
       target_group {

@@ -113,7 +113,7 @@ resource "aws_codedeploy_deployment_group" "this" {
       }
 
       target_group {
-        name = ${var.target_group_1}"
+        name = "${var.target_group_1}"
         # name = "${aws_lb_target_group.green.name}"
       }
       

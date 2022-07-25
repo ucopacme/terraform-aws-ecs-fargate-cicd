@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pipeline" {
-  bucket = "${var.name}-codepipeline-bucketkk"
+  bucket = "${var.name}-codepipeline-bucket"
   
   server_side_encryption_configuration {
     rule {
@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "pipeline" {
             "Effect": "Deny",
             "Principal": "*",
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucketkk/*",
+            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucket/*",
             "Condition": {
                 "StringNotEquals": {
                     "s3:x-amz-server-side-encryption": "aws:kms"
@@ -31,7 +31,7 @@ resource "aws_s3_bucket" "pipeline" {
             "Effect": "Deny",
             "Principal": "*",
             "Action": "s3:*",
-            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucketkk/*",
+            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucket/*",
             "Condition": {
                 "Bool": {
                     "aws:SecureTransport": "false"
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "assume_by_pipeline" {
 
 resource "aws_iam_role" "pipeline" {
   name = "${var.name}-pipeline-ecs-service-role"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_by_pipeline.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_by_pipeline.json
 }
 
 data "aws_iam_policy_document" "pipeline" {
@@ -145,16 +145,16 @@ data "aws_iam_policy_document" "pipeline" {
 }
 
 resource "aws_iam_role_policy" "pipeline" {
-  role = "${aws_iam_role.pipeline.name}"
-  policy = "${data.aws_iam_policy_document.pipeline.json}"
+  role = aws_iam_role.pipeline.name
+  policy = data.aws_iam_policy_document.pipeline.json
 }
 
 resource "aws_codepipeline" "this" {
   name = "${var.name}-pipeline"
-  role_arn = "${aws_iam_role.pipeline.arn}"
+  role_arn = aws_iam_role.pipeline.arn
 
   artifact_store {
-    location = "${var.name}-codepipeline-bucketkk"
+    location = "${var.name}-codepipeline-bucket"
     type = "S3"
   }
 
@@ -190,7 +190,7 @@ resource "aws_codepipeline" "this" {
       output_artifacts = ["BuildArtifact"]
 
       configuration = {
-        ProjectName = "${aws_codebuild_project.this.name}"
+        ProjectName = aws_codebuild_project.this.name
       }
     }
   }

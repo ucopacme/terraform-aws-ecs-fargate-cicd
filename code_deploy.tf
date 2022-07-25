@@ -108,12 +108,12 @@ resource "aws_codedeploy_deployment_group" "this" {
       }
 
       target_group {
-        name = "test-dev-0-alb-tg"
+        name = var.target_group_0
         # name = "${aws_lb_target_group.blue.name}"
       }
 
       target_group {
-        name = "test-dev-1-alb-tg"
+        name = var.target_group_1
         # name = "${aws_lb_target_group.green.name}"
       }
       

@@ -19,6 +19,17 @@ variable "listener_arns" {
   type        = list(string)
   default     = null
 }
+variable "target_group_0" {
+  description = "The resource name."
+  type        = list(string)
+  default     = null
+}
+variable "target_group_1" {
+  description = "The resource name."
+  type        = list(string)
+  default     = null
+}
+
 variable "IMAGE_REPO_NAME" {
   description = "The resource name."
   type        = string

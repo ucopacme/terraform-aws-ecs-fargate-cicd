@@ -170,8 +170,8 @@ resource "aws_codepipeline" "this" {
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        RepositoryName = "kk-ecs-repo"
-        BranchName     = "master"
+        RepositoryName = var.nepositoryname
+        BranchName     = var.nranchname
         
       }
     }

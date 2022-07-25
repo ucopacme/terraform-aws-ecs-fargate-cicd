@@ -16,7 +16,7 @@ variable "execution_role" {
 
 variable "listener_arns" {
   description = "The resource name."
-  type        = string
+  type        = list(string)
   default     = null
 }
 variable "IMAGE_REPO_NAME" {

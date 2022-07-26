@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pipeline" {
-  bucket = "${var.service_name}-codepipeline-bucketkk"
+  bucket = "${var.service_name}-codepipeline-bucket"
   tags = var.tags
 }
 

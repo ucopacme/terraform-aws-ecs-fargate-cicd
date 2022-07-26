@@ -1,49 +1,16 @@
 resource "aws_s3_bucket" "pipeline" {
-  bucket = "${var.name}-codepipeline-bucket"
+  bucket = "${var.service_name}-codepipeline-bucketkk"
   tags = var.tags
-  }
+}
 
- resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-  bucket = join("", aws_s3_bucket.pipeline.id)
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.pipeline.id
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "AES256"
+      sse_algorithm = "AES256"
     }
   }
-}
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Id": "${var.name}Codepipeline",
-  "Statement": [
-        {
-            "Sid": "DenyUnEncryptedObjectUploads",
-            "Effect": "Deny",
-            "Principal": "*",
-            "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucket/*",
-            "Condition": {
-                "StringNotEquals": {
-                    "s3:x-amz-server-side-encryption": "aws:kms"
-                }
-            }
-        },
-        {
-            "Sid": "DenyInsecureConnections",
-            "Effect": "Deny",
-            "Principal": "*",
-            "Action": "s3:*",
-            "Resource": "arn:aws:s3:::${var.name}-codepipeline-bucket/*",
-            "Condition": {
-                "Bool": {
-                    "aws:SecureTransport": "false"
-                }
-            }
-        }
-    ]
-}
-POLICY
 }
 
 data "aws_iam_policy_document" "assume_by_pipeline" {

@@ -155,7 +155,7 @@ resource "aws_codepipeline" "this" {
       owner     = "AWS"
       provider  = "Manual"
       version   = "1"
-      run_order = 2
+      run_order = 1
 
       configuration = {
         CustomData         = "Please review and approve the changes"
@@ -168,6 +168,7 @@ resource "aws_codepipeline" "this" {
       owner = "AWS"
       provider = "CodeBuild"
       version = "1"
+      run_order = 2
       input_artifacts = ["SourceArtifact"]
       output_artifacts = ["BuildArtifact"]
 

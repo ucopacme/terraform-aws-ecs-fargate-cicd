@@ -164,12 +164,12 @@ resource "aws_codepipeline" "this" {
       }
     }
     action {
-      name      = "${var.name}-Terraform_Apply_Approval"
+      name      = "Approval"
       category  = "Approval"
       owner     = "AWS"
       provider  = "Manual"
       version   = "1"
-      run_order = 2
+      run_order = 1
 
       configuration = {
         CustomData         = "Please review and approve the changes"

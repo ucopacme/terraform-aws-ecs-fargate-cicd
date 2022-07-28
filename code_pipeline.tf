@@ -176,6 +176,7 @@ resource "aws_codepipeline" "this" {
         #ExternalEntityLink = "https://#{TF.pipeline_region}.console.aws.amazon.com/codesuite/codebuild/${local.account}/projects/#{TF.build_id}/build/#{TF.build_id}%3A#{TF.build_tag}/?region=#{TF.pipeline_region}"
       }
   }
+  }
 
   stage {
     name = "Deploy"

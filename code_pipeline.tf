@@ -150,25 +150,11 @@ resource "aws_codepipeline" "this" {
   stage {
     name = "Build"
     action {
-      name      = "Approval"
-      category  = "Approval"
-      owner     = "AWS"
-      provider  = "Manual"
-      version   = "1"
-      run_order = 1
-
-      configuration = {
-        CustomData         = "Please review and approve the changes"
-        #ExternalEntityLink = "https://#{TF.pipeline_region}.console.aws.amazon.com/codesuite/codebuild/${local.account}/projects/#{TF.build_id}/build/#{TF.build_id}%3A#{TF.build_tag}/?region=#{TF.pipeline_region}"
-      }
-  }
-    action {
       name = "Build"
       category = "Build"
       owner = "AWS"
       provider = "CodeBuild"
       version = "1"
-      run_order = 2
       input_artifacts = ["SourceArtifact"]
       output_artifacts = ["BuildArtifact"]
 

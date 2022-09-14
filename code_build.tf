@@ -27,7 +27,15 @@ data "aws_iam_policy_document" "codebuild" {
       "s3:GetObjectVersion",
       "s3:GetBucketAcl",
       "s3:GetBucketLocation",
-      "ssm:GetParameters"
+      "ssm:GetParameters",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:List*",
+      "secretsmanager:GetResourcePolicy"
     ]
 
     resources = ["*"]

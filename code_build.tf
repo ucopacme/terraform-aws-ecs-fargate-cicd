@@ -116,7 +116,7 @@ resource "aws_codebuild_project" "this" {
     compute_type    = var.compute_type
     image           = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
     type            = "LINUX_CONTAINER"
-    privileged_mode = true
+    privileged_mode = var.privileged_mode
 
     environment_variable {
       name  = "IMAGE_REPO_NAME"

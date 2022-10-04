@@ -2,7 +2,11 @@ variable "name" {
   type       = string
   default     = "kk-test"
 }
-
+variable "privileged_mode" {
+  default     = true
+  description = "Set to `false` to prevent Database accessibility"
+  type        = bool
+}
 variable "cluster_name" {
   description = "The resource name."
   type        = string

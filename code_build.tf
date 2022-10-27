@@ -127,6 +127,11 @@ resource "aws_codebuild_project" "this" {
       name  = "AWS_ACCOUNT_ID"
       value = var.aws_account_id
     }
+    
+    environment_variable {
+      name  = "DEPLOY"
+      value = var.DEPLOY
+    }
 
     environment_variable {
       name  = "AWS_DEFAULT_REGION"

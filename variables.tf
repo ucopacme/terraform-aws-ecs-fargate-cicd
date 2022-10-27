@@ -77,7 +77,7 @@ variable "aws_account_id" {
   default = ""
 }
 
-variable "deploy" {
+variable "DEPLOY" {
   default = ""
 }
 

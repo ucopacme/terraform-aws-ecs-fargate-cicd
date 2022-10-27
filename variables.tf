@@ -1,6 +1,6 @@
 variable "name" {
   type       = string
-  default     = "kk-test"
+  default     = "cluster"
 }
 variable "privileged_mode" {
   default     = true
@@ -74,6 +74,10 @@ variable "service_name" {
 }
 
 variable "aws_account_id" {
+  default = ""
+}
+
+variable "deploy" {
   default = ""
 }
 

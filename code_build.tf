@@ -129,11 +129,6 @@ resource "aws_codebuild_project" "this" {
     }
     
     environment_variable {
-      name  = "DEPLOY"
-      value = var.DEPLOY
-    }
-
-    environment_variable {
       name  = "AWS_DEFAULT_REGION"
       value = var.region
     }
@@ -151,6 +146,10 @@ resource "aws_codebuild_project" "this" {
     environment_variable {
       name  = "MEMORY_RESV"
       value = var.MEMORY_RESV
+    }
+    environment_variable {
+      name  = "DEPLOY"
+      value = var.DEPLOY
     }
   }
 

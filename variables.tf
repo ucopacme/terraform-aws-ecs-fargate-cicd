@@ -80,7 +80,7 @@ variable "aws_account_id" {
 variable "DEPLOY" {
   description = "The resource name."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "region" {

@@ -114,7 +114,7 @@ resource "aws_codebuild_project" "this" {
 
   environment {
     compute_type    = var.compute_type
-    image           = "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+    image           = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
     type            = "LINUX_CONTAINER"
     privileged_mode = var.privileged_mode
 

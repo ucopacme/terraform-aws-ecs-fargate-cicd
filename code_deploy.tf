@@ -58,8 +58,9 @@ data "aws_iam_policy_document" "codedeploy" {
 
     actions = ["iam:PassRole"]
 
+# Initial revision of this module used the execution role for the task role.
     resources = [
-      var.execution_role
+      var.task_role == null ? var.execution_role : var.execution_role, var.task_role
     ]
   }
 }

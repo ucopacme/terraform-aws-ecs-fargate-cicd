@@ -63,7 +63,19 @@ variable "SERVICE_PORT" {
 variable "compute_type" {
   description = "The resource name."
   type        = string
-  default     = null
+  default     = "BUILD_GENERAL1_SMALL"
+}
+
+variable "codebuild_image" {
+  description = "The resource name."
+  type        = string
+  default     = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+}
+
+variable "codebuild_type" {
+  description = "The resource name."
+  type        = string
+  default     = "LINUX_CONTAINER"
 }
 
 variable "MEMORY_RESV" {

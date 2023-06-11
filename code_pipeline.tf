@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "pipeline" {
   bucket = "${var.name}-codepipeline-bucket"
-  tags = var.tags
+  tags   = var.tags
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
@@ -9,6 +9,36 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "pipeline" {
+  bucket = aws_s3_bucket.pipeline.id
+  policy = data.aws_iam_policy_document.pipeline_bucket_policy.json
+}
+
+data "aws_iam_policy_document" "pipeline_bucket_policy" {
+  statement {
+    sid    = "AllowSSLRequestsOnly"
+    effect = "Deny"
+
+    resources = [
+      "${aws_s3_bucket.pipeline.arn}",
+      "${aws_s3_bucket.pipeline.arn}/*",
+    ]
+
+    actions = ["s3:*"]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
     }
   }
 }
@@ -23,25 +53,25 @@ resource "aws_s3_bucket_public_access_block" "this" {
 
 data "aws_iam_policy_document" "assume_by_pipeline" {
   statement {
-    sid = "AllowAssumeByPipeline"
-    effect = "Allow"
+    sid     = "AllowAssumeByPipeline"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["codepipeline.amazonaws.com"]
     }
   }
 }
 
 resource "aws_iam_role" "pipeline" {
-  name = "${var.name}-pipeline-ecs-service-role"
+  name               = "${var.name}-pipeline-ecs-service-role"
   assume_role_policy = data.aws_iam_policy_document.assume_by_pipeline.json
 }
 
 data "aws_iam_policy_document" "pipeline" {
   statement {
-    sid = "AllowS3"
+    sid    = "AllowS3"
     effect = "Allow"
 
     actions = [
@@ -54,15 +84,15 @@ data "aws_iam_policy_document" "pipeline" {
   }
 
   statement {
-    sid = "AllowECR"
+    sid    = "AllowECR"
     effect = "Allow"
 
-    actions = ["ecr:DescribeImages"]
+    actions   = ["ecr:DescribeImages"]
     resources = ["*"]
   }
 
   statement {
-    sid = "AllowCodebuild"
+    sid    = "AllowCodebuild"
     effect = "Allow"
 
     actions = [
@@ -73,7 +103,7 @@ data "aws_iam_policy_document" "pipeline" {
   }
 
   statement {
-    sid = "AllowCodedepoloy"
+    sid    = "AllowCodedepoloy"
     effect = "Allow"
 
     actions = [
@@ -88,7 +118,7 @@ data "aws_iam_policy_document" "pipeline" {
   }
 
   statement {
-    sid = "AllowCodecommit"
+    sid    = "AllowCodecommit"
     effect = "Allow"
 
     actions = [
@@ -98,7 +128,7 @@ data "aws_iam_policy_document" "pipeline" {
   }
 
   statement {
-    sid = "AllowResources"
+    sid    = "AllowResources"
     effect = "Allow"
 
     actions = [
@@ -123,33 +153,33 @@ data "aws_iam_policy_document" "pipeline" {
 }
 
 resource "aws_iam_role_policy" "pipeline" {
-  role = aws_iam_role.pipeline.name
+  role   = aws_iam_role.pipeline.name
   policy = data.aws_iam_policy_document.pipeline.json
 }
 
 resource "aws_codepipeline" "this" {
-  name = "${var.name}-pipeline"
+  name     = "${var.name}-pipeline"
   role_arn = aws_iam_role.pipeline.arn
 
   artifact_store {
     location = "${var.name}-codepipeline-bucket"
-    type = "S3"
+    type     = "S3"
   }
 
   stage {
     name = "Source"
 
     action {
-      name = "Source"
-      category = "Source"
-      owner = "AWS"
-      provider = "CodeCommit"
-      version = "1"
+      name             = "Source"
+      category         = "Source"
+      owner            = "AWS"
+      provider         = "CodeCommit"
+      version          = "1"
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        RepositoryName = var.repositoryname
-        BranchName     = var.branchname
+        RepositoryName       = var.repositoryname
+        BranchName           = var.branchname
         PollForSourceChanges = "false"
       }
     }
@@ -158,12 +188,12 @@ resource "aws_codepipeline" "this" {
   stage {
     name = "Build"
     action {
-      name = "Build"
-      category = "Build"
-      owner = "AWS"
-      provider = "CodeBuild"
-      version = "1"
-      input_artifacts = ["SourceArtifact"]
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      input_artifacts  = ["SourceArtifact"]
       output_artifacts = ["BuildArtifact"]
 
       configuration = {
@@ -176,22 +206,22 @@ resource "aws_codepipeline" "this" {
     name = "Deploy"
 
     action {
-      name = "blue-green"
-      category = "Deploy"
-      owner = "AWS"
-      provider = "CodeDeployToECS"
+      name            = "blue-green"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "CodeDeployToECS"
       input_artifacts = ["BuildArtifact"]
-      version = "1"
+      version         = "1"
 
       configuration = {
-        ApplicationName = "${var.name}-service-deploy"
-        DeploymentGroupName = "${var.name}-service-deploy-group"
-        Image1ArtifactName = "BuildArtifact"
-        Image1ContainerName = "IMAGE1_NAME"
+        ApplicationName                = "${var.name}-service-deploy"
+        DeploymentGroupName            = "${var.name}-service-deploy-group"
+        Image1ArtifactName             = "BuildArtifact"
+        Image1ContainerName            = "IMAGE1_NAME"
         TaskDefinitionTemplateArtifact = "BuildArtifact"
-        TaskDefinitionTemplatePath = "taskdef.json"
-        AppSpecTemplateArtifact = "BuildArtifact"
-        AppSpecTemplatePath = "appspec.yaml"
+        TaskDefinitionTemplatePath     = "taskdef.json"
+        AppSpecTemplateArtifact        = "BuildArtifact"
+        AppSpecTemplatePath            = "appspec.yaml"
       }
     }
   }

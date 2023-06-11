@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "pipeline" {
     ]
     resources = ["*"]
   }
-  
+
   statement {
     sid = "AllowCodecommit"
     effect = "Allow"
@@ -151,7 +151,6 @@ resource "aws_codepipeline" "this" {
         RepositoryName = var.repositoryname
         BranchName     = var.branchname
         PollForSourceChanges = "false"
-        
       }
     }
   }
@@ -171,7 +170,6 @@ resource "aws_codepipeline" "this" {
         ProjectName = aws_codebuild_project.this.name
       }
     }
- 
   }
 
   stage {

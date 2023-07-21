@@ -105,6 +105,30 @@ variable "DEPLOY" {
   default     = ""
 }
 
+variable "APP_NAME" {
+  description = "Environment variable for consumption in CodeBuild (usually set to ucop:application tag)"
+  type        = string
+  default     = ""
+}
+
+variable "APP_ENVIRONMENT" {
+  description = "Environment variable for consumption in CodeBuild (usually set to ucop:environment tag)"
+  type        = string
+  default     = ""
+}
+
+variable "TASK_CPU" {
+  description = "Environment variable for consumption in CodeBuild"
+  type        = string
+  default     = ""
+}
+
+variable "TASK_MEMORY" {
+  description = "Environment variable for consumption in CodeBuild"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
   default = "us-west-2"
 }

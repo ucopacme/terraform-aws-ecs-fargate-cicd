@@ -119,6 +119,16 @@ resource "aws_codebuild_project" "this" {
     privileged_mode = var.privileged_mode
 
     environment_variable {
+      name  = "APP_NAME"
+      value = var.APP_NAME
+    }
+
+    environment_variable {
+      name  = "APP_ENVIRONMENT"
+      value = var.APP_ENVIRONMENT
+    }
+
+    environment_variable {
       name  = "IMAGE_REPO_NAME"
       value = var.IMAGE_REPO_NAME
     }
@@ -147,6 +157,17 @@ resource "aws_codebuild_project" "this" {
       name  = "MEMORY_RESV"
       value = var.MEMORY_RESV
     }
+
+    environment_variable {
+      name  = "TASK_CPU"
+      value = var.TASK_CPU
+    }
+
+    environment_variable {
+      name  = "TASK_MEMORY"
+      value = var.TASK_MEMORY
+    }
+
     environment_variable {
       name  = "DEPLOY"
       value = var.DEPLOY
@@ -156,6 +177,5 @@ resource "aws_codebuild_project" "this" {
   source {
     type            = "CODEPIPELINE"
     buildspec = "buildspec.yml"
-    
   }
 }

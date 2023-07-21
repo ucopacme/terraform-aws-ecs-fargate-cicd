@@ -179,5 +179,10 @@ resource "aws_codebuild_project" "this" {
     type      = "CODEPIPELINE"
     buildspec = "buildspec.yml"
   }
+
+#  lifecycle {
+#    ignore_changes = [environment]
+#  }
+
   tags = var.tags
 }

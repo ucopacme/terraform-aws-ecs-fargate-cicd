@@ -67,6 +67,7 @@ data "aws_iam_policy_document" "assume_by_pipeline" {
 resource "aws_iam_role" "pipeline" {
   name               = "${var.name}-pipeline-ecs-service-role"
   assume_role_policy = data.aws_iam_policy_document.assume_by_pipeline.json
+  tags               = var.tags
 }
 
 data "aws_iam_policy_document" "pipeline" {
@@ -225,4 +226,5 @@ resource "aws_codepipeline" "this" {
       }
     }
   }
+  tags = var.tags
 }

@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "assume_by_codedeploy" {
 resource "aws_iam_role" "codedeploy" {
   name               = "${var.name}-codedeploy"
   assume_role_policy = data.aws_iam_policy_document.assume_by_codedeploy.json
+  tags               = var.tags
 }
 
 data "aws_iam_policy_document" "codedeploy" {
@@ -41,9 +42,9 @@ data "aws_iam_policy_document" "codedeploy" {
 
     resources = ["*"]
   }
-  
+
   statement {
-    sid = "AllowCodecommit"
+    sid    = "AllowCodecommit"
     effect = "Allow"
 
     actions = [
@@ -58,7 +59,7 @@ data "aws_iam_policy_document" "codedeploy" {
 
     actions = ["iam:PassRole"]
 
-# Initial revision of this module used the execution role for the task role.
+    # Initial revision of this module used the execution role for the task role.
     resources = [
       var.task_role == null ? var.execution_role : var.execution_role, var.task_role
     ]
@@ -73,6 +74,7 @@ resource "aws_iam_role_policy" "codedeploy" {
 resource "aws_codedeploy_app" "this" {
   compute_platform = "ECS"
   name             = "${var.name}-service-deploy"
+  tags             = var.tags
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
@@ -117,8 +119,9 @@ resource "aws_codedeploy_deployment_group" "this" {
         name = var.target_group_1
         # name = "${aws_lb_target_group.green.name}"
       }
-      
+
     }
-  # lifecycle { ignore_changes = [blue_green_deployment_config] }
+    # lifecycle { ignore_changes = [blue_green_deployment_config] }
   }
+  tags = var.tags
 }

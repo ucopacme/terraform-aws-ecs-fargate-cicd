@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "assume_by_codebuild" {
 resource "aws_iam_role" "codebuild" {
   name               = "${var.name}-codebuild"
   assume_role_policy = data.aws_iam_policy_document.assume_by_codebuild.json
+  tags               = var.tags
 }
 
 data "aws_iam_policy_document" "codebuild" {
@@ -51,9 +52,9 @@ data "aws_iam_policy_document" "codebuild" {
 
     resources = ["*"]
   }
-  
+
   statement {
-    sid = "AllowCodecommit"
+    sid    = "AllowCodecommit"
     effect = "Allow"
 
     actions = [
@@ -137,7 +138,7 @@ resource "aws_codebuild_project" "this" {
       name  = "AWS_ACCOUNT_ID"
       value = var.aws_account_id
     }
-    
+
     environment_variable {
       name  = "AWS_DEFAULT_REGION"
       value = var.region
@@ -175,7 +176,8 @@ resource "aws_codebuild_project" "this" {
   }
 
   source {
-    type            = "CODEPIPELINE"
+    type      = "CODEPIPELINE"
     buildspec = "buildspec.yml"
   }
+  tags = var.tags
 }

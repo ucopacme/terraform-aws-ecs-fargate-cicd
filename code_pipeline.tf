@@ -19,16 +19,31 @@ resource "aws_s3_bucket_policy" "pipeline" {
 }
 
 data "aws_iam_policy_document" "pipeline_bucket_policy" {
+  policy_id = "SSEAndSSLPolicy"
+
   statement {
-    sid    = "AllowSSLRequestsOnly"
-    effect = "Deny"
+    sid       = "DenyUnEncryptedObjectUploads"
+    effect    = "Deny"
+    resources = ["${aws_s3_bucket.pipeline.arn}/*"]
+    actions   = ["s3:PutObject"]
 
-    resources = [
-      "${aws_s3_bucket.pipeline.arn}",
-      "${aws_s3_bucket.pipeline.arn}/*",
-    ]
+    condition {
+      test     = "StringNotEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
 
-    actions = ["s3:*"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+
+  statement {
+    sid       = "DenyInsecureConnections"
+    effect    = "Deny"
+    resources = ["${aws_s3_bucket.pipeline.arn}/*"]
+    actions   = ["s3:*"]
 
     condition {
       test     = "Bool"

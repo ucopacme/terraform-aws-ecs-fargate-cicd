@@ -85,7 +85,81 @@ resource "aws_iam_role" "pipeline" {
   tags               = var.tags
 }
 
+# This policy is based on AWS default, with removal of several actions
+# verified as unused via review of CloudTrail.
 data "aws_iam_policy_document" "pipeline" {
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["iam:PassRole"]
+
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "iam:PassedToService"
+      values   = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codecommit:CancelUploadArchive",
+      "codecommit:GetBranch",
+      "codecommit:GetCommit",
+      "codecommit:GetRepository",
+      "codecommit:GetUploadArchiveStatus",
+      "codecommit:UploadArchive",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codedeploy:CreateDeployment",
+      "codedeploy:GetApplication",
+      "codedeploy:GetApplicationRevision",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "s3:*",
+      "ecs:*",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codebuild:BatchGetBuilds",
+      "codebuild:StartBuild",
+      "codebuild:BatchGetBuildBatches",
+      "codebuild:StartBuildBatch",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["ecr:DescribeImages"]
+  }
+}
+
+# pipeline_old policy was used prior to tag v0.0.16.
+# It appears to be very similar to the AWS default policy.
+data "aws_iam_policy_document" "pipeline_old" {
   statement {
     sid    = "AllowS3"
     effect = "Allow"
@@ -165,6 +239,213 @@ data "aws_iam_policy_document" "pipeline" {
       "iam:PassRole"
     ]
     resources = ["*"]
+  }
+}
+
+# For reference, below is the default policy created for pipelines that
+# are created in the AWS console.
+data "aws_iam_policy_document" "pipeline_aws_default" {
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["iam:PassRole"]
+
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "iam:PassedToService"
+
+      values = [
+        "cloudformation.amazonaws.com",
+        "elasticbeanstalk.amazonaws.com",
+        "ec2.amazonaws.com",
+        "ecs-tasks.amazonaws.com",
+      ]
+    }
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codecommit:CancelUploadArchive",
+      "codecommit:GetBranch",
+      "codecommit:GetCommit",
+      "codecommit:GetRepository",
+      "codecommit:GetUploadArchiveStatus",
+      "codecommit:UploadArchive",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codedeploy:CreateDeployment",
+      "codedeploy:GetApplication",
+      "codedeploy:GetApplicationRevision",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["codestar-connections:UseConnection"]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "elasticbeanstalk:*",
+      "ec2:*",
+      "elasticloadbalancing:*",
+      "autoscaling:*",
+      "cloudwatch:*",
+      "s3:*",
+      "sns:*",
+      "cloudformation:*",
+      "rds:*",
+      "sqs:*",
+      "ecs:*",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "lambda:InvokeFunction",
+      "lambda:ListFunctions",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "opsworks:CreateDeployment",
+      "opsworks:DescribeApps",
+      "opsworks:DescribeCommands",
+      "opsworks:DescribeDeployments",
+      "opsworks:DescribeInstances",
+      "opsworks:DescribeStacks",
+      "opsworks:UpdateApp",
+      "opsworks:UpdateStack",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "cloudformation:CreateStack",
+      "cloudformation:DeleteStack",
+      "cloudformation:DescribeStacks",
+      "cloudformation:UpdateStack",
+      "cloudformation:CreateChangeSet",
+      "cloudformation:DeleteChangeSet",
+      "cloudformation:DescribeChangeSet",
+      "cloudformation:ExecuteChangeSet",
+      "cloudformation:SetStackPolicy",
+      "cloudformation:ValidateTemplate",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "codebuild:BatchGetBuilds",
+      "codebuild:StartBuild",
+      "codebuild:BatchGetBuildBatches",
+      "codebuild:StartBuildBatch",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "devicefarm:ListProjects",
+      "devicefarm:ListDevicePools",
+      "devicefarm:GetRun",
+      "devicefarm:GetUpload",
+      "devicefarm:CreateUpload",
+      "devicefarm:ScheduleRun",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "servicecatalog:ListProvisioningArtifacts",
+      "servicecatalog:CreateProvisioningArtifact",
+      "servicecatalog:DescribeProvisioningArtifact",
+      "servicecatalog:DeleteProvisioningArtifact",
+      "servicecatalog:UpdateProduct",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["cloudformation:ValidateTemplate"]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["ecr:DescribeImages"]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "states:DescribeExecution",
+      "states:DescribeStateMachine",
+      "states:StartExecution",
+    ]
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "appconfig:StartDeployment",
+      "appconfig:StopDeployment",
+      "appconfig:GetDeployment",
+    ]
   }
 }
 

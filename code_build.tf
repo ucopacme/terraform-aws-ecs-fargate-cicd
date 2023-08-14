@@ -23,20 +23,21 @@ data "aws_iam_policy_document" "codebuild" {
     effect = "Allow"
 
     actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:GetObjectVersion",
       "s3:GetBucketAcl",
       "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:ListBucket",
+      "s3:PutObject",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:List*",
       "ssm:GetParameters",
       "ssmmessages:CreateControlChannel",
       "ssmmessages:CreateDataChannel",
       "ssmmessages:OpenControlChannel",
-      "ssmmessages:OpenDataChannel",
-      "secretsmanager:GetSecretValue",
-      "secretsmanager:DescribeSecret",
-      "secretsmanager:List*",
-      "secretsmanager:GetResourcePolicy"
+      "ssmmessages:OpenDataChannel"
     ]
 
     resources = ["*"]

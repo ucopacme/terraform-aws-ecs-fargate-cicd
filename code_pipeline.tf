@@ -86,7 +86,8 @@ resource "aws_iam_role" "pipeline" {
 }
 
 # This policy is based on AWS default, with removal of several actions
-# verified as unused via review of CloudTrail.
+# verified as unused via review of CloudTrail.  See also:
+# https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
 data "aws_iam_policy_document" "pipeline" {
   statement {
     effect    = "Allow"

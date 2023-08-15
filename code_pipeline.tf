@@ -56,18 +56,6 @@ data "aws_iam_policy_document" "pipeline_bucket_policy" {
       identifiers = ["*"]
     }
   }
-
-  statement {
-    sid       = "AllowCodePipelineListBucket"
-    effect    = "Allow"
-    resources = ["${aws_s3_bucket.pipeline.arn}"]
-    actions   = ["s3:ListBucket"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["codepipeline.amazonaws.com"]
-    }
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {

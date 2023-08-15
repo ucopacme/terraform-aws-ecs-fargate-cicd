@@ -135,7 +135,8 @@ data "aws_iam_policy_document" "pipeline" {
 
     actions = [
       "s3:*",
-      "ecs:*",
+      "ecs:RegisterTaskDefinition",
+      "ecs:TagResource",
     ]
   }
 
@@ -149,12 +150,6 @@ data "aws_iam_policy_document" "pipeline" {
       "codebuild:BatchGetBuildBatches",
       "codebuild:StartBuildBatch",
     ]
-  }
-
-  statement {
-    effect    = "Allow"
-    resources = ["*"]
-    actions   = ["ecr:DescribeImages"]
   }
 }
 

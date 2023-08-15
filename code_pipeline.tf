@@ -134,9 +134,26 @@ data "aws_iam_policy_document" "pipeline" {
     resources = ["*"]
 
     actions = [
-      "s3:*",
       "ecs:RegisterTaskDefinition",
       "ecs:TagResource",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.pipeline.arn}"]
+
+    actions = [
+      "s3:ListBucket",
+    ]
+  }
+
+  statement {
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.pipeline.arn}/*"]
+
+    actions = [
+      "s3:PutObject",
     ]
   }
 

@@ -1,3 +1,10 @@
+data "aws_caller_identity" "this" {}
+data "aws_region" "this" {}
+
+locals {
+  ecr_repository_arn = var.ecr_repository_arn != "" ? var.ecr_repository_arn : "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${var.name}-ecr"
+}
+
 data "aws_iam_policy_document" "assume_by_codebuild" {
   statement {
     sid     = "AllowAssumeByCodebuild"
@@ -19,25 +26,22 @@ resource "aws_iam_role" "codebuild" {
 
 data "aws_iam_policy_document" "codebuild" {
   statement {
-    sid    = "AllowS3"
+    sid    = "AllowActions"
     effect = "Allow"
 
     actions = [
-      "s3:GetBucketAcl",
-      "s3:GetBucketLocation",
+      "ecr:GetAuthorizationToken",
+      "kms:GenerateDataKey*",
       "s3:GetObject",
       "s3:GetObjectVersion",
       "s3:ListBucket",
       "s3:PutObject",
-      "secretsmanager:DescribeSecret",
-      "secretsmanager:GetResourcePolicy",
       "secretsmanager:GetSecretValue",
-      "secretsmanager:List*",
       "ssm:GetParameters",
       "ssmmessages:CreateControlChannel",
       "ssmmessages:CreateDataChannel",
       "ssmmessages:OpenControlChannel",
-      "ssmmessages:OpenDataChannel"
+      "ssmmessages:OpenDataChannel",
     ]
 
     resources = ["*"]
@@ -48,55 +52,53 @@ data "aws_iam_policy_document" "codebuild" {
     effect = "Allow"
 
     actions = [
-      "ecr:*"
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:CompleteLayerUpload",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
     ]
 
-    resources = ["*"]
+    resources = ["${local.ecr_repository_arn}"]
   }
 
   statement {
-    sid    = "AllowCodecommit"
+    sid    = "AllowKmsDecrypt"
     effect = "Allow"
-
-    actions = [
-      "codecommit:*"
-    ]
     resources = ["*"]
+
+    actions = ["kms:Decrypt"]
+
+    condition {
+      test     = "ForAnyValue:StringEquals"
+      variable = "kms:ResourceAliases"
+      values   = [
+        "aws/secretsmanager",
+        "aws/ssm",
+        "aws/s3",
+      ]
+    }
   }
 
   statement {
-    sid    = "AWSKMSUse"
+    sid    = "AllowCloudWatchLogsCreateLogGroupsAndLogStreams"
     effect = "Allow"
-
-    actions = [
-      "kms:DescribeKey",
-      "kms:GenerateDataKey*",
-      "kms:Encrypt",
-      "kms:ReEncrypt*",
-      "kms:Decrypt"
-    ]
-
-    resources = ["*"]
-  }
-
-  statement {
-    sid       = "AllowECSDescribeTaskDefinition"
-    effect    = "Allow"
-    actions   = ["ecs:DescribeTaskDefinition"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "AllowLogging"
-    effect = "Allow"
+    resources = ["arn:aws:logs:*:*:log-group:/aws/codebuild/*"]
 
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
     ]
+  }
 
-    resources = ["*"]
+  statement {
+    sid    = "AllowCloudWatchLogsPutLogEvents"
+    effect = "Allow"
+    resources = ["arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"]
+
+    actions = ["logs:PutLogEvents"]
   }
 }
 

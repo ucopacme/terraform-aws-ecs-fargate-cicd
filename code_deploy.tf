@@ -19,10 +19,11 @@ resource "aws_iam_role" "codedeploy" {
 
 data "aws_iam_policy_document" "codedeploy" {
   statement {
-    sid    = "AllowLoadBalancingAndECSModifications"
+    sid    = "AllowAWSCodeDeployForECS"
     effect = "Allow"
 
     actions = [
+      "cloudwatch:DescribeAlarms",
       "ecs:CreateTaskSet",
       "ecs:DeleteTaskSet",
       "ecs:DescribeServices",
@@ -33,23 +34,11 @@ data "aws_iam_policy_document" "codedeploy" {
       "elasticloadbalancing:ModifyListener",
       "elasticloadbalancing:ModifyRule",
       "lambda:InvokeFunction",
-      "cloudwatch:DescribeAlarms",
-      "sns:Publish",
       "s3:GetObject",
-      "s3:GetObjectMetadata",
-      "s3:GetObjectVersion"
+      "s3:GetObjectVersion",
+      "sns:Publish",
     ]
 
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "AllowCodecommit"
-    effect = "Allow"
-
-    actions = [
-      "codecommit:*"
-    ]
     resources = ["*"]
   }
 

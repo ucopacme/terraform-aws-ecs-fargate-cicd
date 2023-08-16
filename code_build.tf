@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowKmsDecrypt"
     effect = "Allow"
-    resources = ["*"]
+    resources = ["arn:aws:kms:*:${data.aws_caller_identity.this.account_id}:key/*"]
 
     actions = ["kms:Decrypt"]
 

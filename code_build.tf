@@ -50,6 +50,8 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowECR"
     effect = "Allow"
+#    resources = ["${local.ecr_repository_arn}"]
+    resources = ["*"]
 
     actions = [
       "ecr:BatchCheckLayerAvailability",
@@ -61,7 +63,6 @@ data "aws_iam_policy_document" "codebuild" {
       "ecr:UploadLayerPart",
     ]
 
-    resources = ["${local.ecr_repository_arn}"]
   }
 
   statement {

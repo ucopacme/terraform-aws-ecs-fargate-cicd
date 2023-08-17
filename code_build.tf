@@ -1,5 +1,3 @@
-data "aws_caller_identity" "this" {}
-
 data "aws_iam_policy_document" "assume_by_codebuild" {
   statement {
     sid     = "AllowAssumeByCodebuild"

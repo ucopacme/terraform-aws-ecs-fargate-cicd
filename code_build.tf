@@ -1,9 +1,4 @@
 data "aws_caller_identity" "this" {}
-data "aws_region" "this" {}
-
-locals {
-  ecr_repository_arn = var.ecr_repository_arn != "" ? var.ecr_repository_arn : "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${var.name}-ecr"
-}
 
 data "aws_iam_policy_document" "assume_by_codebuild" {
   statement {
@@ -50,8 +45,7 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowECR"
     effect = "Allow"
-#    resources = ["${local.ecr_repository_arn}"]
-    resources = ["*"]
+    resources = var.ecr_repository_arns
 
     actions = [
       "ecr:BatchCheckLayerAvailability",
@@ -62,7 +56,6 @@ data "aws_iam_policy_document" "codebuild" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
     ]
-
   }
 
   statement {

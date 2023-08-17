@@ -37,10 +37,10 @@ variable "task_role" {
   type        = string
   default     = null
 }
-variable "ecr_repository_arn" {
-  description = "ECR repository ARN"
-  type        = string
-  default     = ""
+variable "ecr_repository_arns" {
+  description = "ECR repository ARNs"
+  type        = list(string)
+  default     = ["*"]
 }
 
 variable "listener_arns" {

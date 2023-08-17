@@ -26,7 +26,6 @@ data "aws_iam_policy_document" "codebuild" {
 
     actions = [
       "ecr:GetAuthorizationToken",
-      "kms:GenerateDataKey*",
       "s3:GetObject",
       "s3:GetObjectVersion",
       "s3:ListBucket",
@@ -56,24 +55,6 @@ data "aws_iam_policy_document" "codebuild" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
     ]
-  }
-
-  statement {
-    sid    = "AllowKmsDecrypt"
-    effect = "Allow"
-    resources = ["arn:aws:kms:*:${data.aws_caller_identity.this.account_id}:key/*"]
-
-    actions = ["kms:Decrypt"]
-
-    condition {
-      test     = "ForAnyValue:StringEquals"
-      variable = "kms:ResourceAliases"
-      values   = [
-        "aws/secretsmanager",
-        "aws/ssm",
-        "aws/s3",
-      ]
-    }
   }
 
   statement {

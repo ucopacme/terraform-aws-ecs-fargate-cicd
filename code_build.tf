@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowS3BucketActions"
     effect = "Allow"
-    resources = contains(var.allowed_s3_buckets, "*") ? ["*"] : concat([aws_s3_bucket.pipeline.arn], var.allowed_s3_buckets)
+    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [ for bucket in concat([aws_s3_bucket.pipeline.arn], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}" ]
 
     actions = [
       "s3:ListBucket",
@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowS3ObjectActions"
     effect = "Allow"
-    resources = contains(var.allowed_s3_buckets, "*") ? ["*"] : [ for bucket in concat([aws_s3_bucket.pipeline.arn], var.allowed_s3_buckets) : "${bucket}/*" ]
+    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [ for bucket in concat([aws_s3_bucket.pipeline.arn], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}/*" ]
 
     actions = [
       "s3:GetObject",

@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "codebuild" {
   statement {
     sid    = "AllowS3BucketActions"
     effect = "Allow"
-    resources = var.allowed_s3_buckets
+    resources = contains(var.allowed_s3_buckets, "*") ? ["*"] : var.allowed_s3_buckets
 
     actions = [
       "s3:ListBucket",

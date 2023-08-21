@@ -24,10 +24,6 @@ data "aws_iam_policy_document" "codebuild" {
 
     actions = [
       "ecr:GetAuthorizationToken",
-      "s3:GetObject",
-      "s3:GetObjectVersion",
-      "s3:ListBucket",
-      "s3:PutObject",
       "secretsmanager:GetSecretValue",
       "ssm:GetParameters",
       "ssmmessages:CreateControlChannel",
@@ -37,6 +33,28 @@ data "aws_iam_policy_document" "codebuild" {
     ]
 
     resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowS3BucketActions"
+    effect = "Allow"
+    resources = var.allowed_s3_buckets
+
+    actions = [
+      "s3:ListBucket",
+    ]
+  }
+
+  statement {
+    sid    = "AllowS3ObjectActions"
+    effect = "Allow"
+    resources = contains(var.allowed_s3_buckets, "*") ? ["*"] : [ for bucket in var.allowed_s3_buckets : "${bucket}/*" ]
+
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:PutObject",
+    ]
   }
 
   statement {

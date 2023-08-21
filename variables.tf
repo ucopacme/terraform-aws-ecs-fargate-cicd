@@ -42,6 +42,11 @@ variable "ecr_repository_arns" {
   type        = list(string)
   default     = ["*"]
 }
+variable "allowed_s3_buckets" {
+  description = "S3 buckets for which access will be granted in IAM policies"
+  type        = list(string)
+  default     = ["*"]
+}
 
 variable "listener_arns" {
   description = "The resource name."

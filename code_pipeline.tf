@@ -18,7 +18,7 @@ resource "aws_s3_bucket_policy" "pipeline" {
   policy = data.aws_iam_policy_document.pipeline_bucket_policy.json
 }
 
-data "aws_iam_policy_document" "pipeline_bucket_policy" {
+data "aws_iam_policy_document" "pipeline_bucket_base" {
   policy_id = "SSEAndSSLPolicy"
 
   statement {
@@ -56,6 +56,44 @@ data "aws_iam_policy_document" "pipeline_bucket_policy" {
       identifiers = ["*"]
     }
   }
+}
+
+data "aws_iam_policy_document" "pipeline_bucket_cross_account" {
+  statement {
+    sid       = "AllowCrossAccountObjectActions"
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.pipeline.arn}/*"]
+    actions   = [
+      "s3:GetObject",
+      "s3:PutObject"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.codepipeline_cross_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+
+  statement {
+    sid       = "AllowCrossAccountBucketActions"
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.pipeline.arn}"]
+    actions   = ["s3:ListBucket"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [for account_id in var.codepipeline_cross_account_ids : "arn:aws:iam::${account_id}:root"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "pipeline_bucket_policy" {
+  source_policy_documents = length(var.codepipeline_cross_account_ids) == 0 ? [
+    data.aws_iam_policy_document.pipeline_bucket_base.json
+  ] : [
+    data.aws_iam_policy_document.pipeline_bucket_base.json,
+    data.aws_iam_policy_document.pipeline_bucket_cross_account.json
+  ]
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {

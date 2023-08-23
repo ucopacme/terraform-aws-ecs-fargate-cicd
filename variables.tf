@@ -47,6 +47,11 @@ variable "allowed_s3_bucket_names" {
   type        = list(string)
   default     = ["*"]
 }
+variable "codepipeline_cross_account_ids" {
+  description = "Account IDs that will be granted access to codepipeline bucket"
+  type        = list(string)
+  default     = []
+}
 
 variable "listener_arns" {
   description = "The resource name."

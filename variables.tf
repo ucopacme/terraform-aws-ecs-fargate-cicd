@@ -52,6 +52,11 @@ variable "codepipeline_cross_account_ids" {
   type        = list(string)
   default     = []
 }
+variable "codepipeline_cross_account_role_arns" {
+  description = "Role ARNs that CodePipeline service role will be granted access to assume"
+  type        = list(string)
+  default     = []
+}
 
 variable "listener_arns" {
   description = "The resource name."

@@ -126,7 +126,7 @@ resource "aws_iam_role" "pipeline" {
 # This policy is based on AWS default, with removal of several actions
 # verified as unused via review of CloudTrail.  See also:
 # https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
-data "aws_iam_policy_document" "pipeline" {
+data "aws_iam_policy_document" "pipeline_base" {
   statement {
     effect    = "Allow"
     resources = ["*"]
@@ -207,6 +207,24 @@ data "aws_iam_policy_document" "pipeline" {
       "codebuild:StartBuildBatch",
     ]
   }
+}
+
+data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
+  statement {
+    sid       = "AllowCrossAccountRoleAssume"
+    effect    = "Allow"
+    resources = var.codepipeline_cross_account_role_arns
+    actions   = ["sts:AssumeRole"]
+  }
+}
+
+data "aws_iam_policy_document" "pipeline" {
+  source_policy_documents = length(var.codepipeline_cross_account_role_arns) == 0 ? [
+    data.aws_iam_policy_document.pipeline_base.json
+  ] : [
+    data.aws_iam_policy_document.pipeline_base.json,
+    data.aws_iam_policy_document.pipeline_cross_account_role_assume.json
+  ]
 }
 
 resource "aws_iam_role_policy" "pipeline" {

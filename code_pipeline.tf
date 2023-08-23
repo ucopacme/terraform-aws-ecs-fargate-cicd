@@ -59,8 +59,6 @@ data "aws_iam_policy_document" "pipeline_bucket_base" {
 }
 
 data "aws_iam_policy_document" "pipeline_bucket_cross_account" {
-  policy_id   = "CrossAccountAccess"
-
   statement {
     sid       = "AllowCrossAccountObjectActions"
     effect    = "Allow"

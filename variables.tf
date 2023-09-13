@@ -149,6 +149,12 @@ variable "TASK_MEMORY" {
   default     = ""
 }
 
+variable "SHIBBOLETH_SP_JSON_CERTS_SECRET_ARN" {
+  description = "Environment variable for consumption in CodeBuild"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
   default = "us-west-2"
 }

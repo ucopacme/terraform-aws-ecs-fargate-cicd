@@ -154,6 +154,11 @@ resource "aws_codebuild_project" "this" {
     }
 
     environment_variable {
+      name  = "SHIBBOLETH_SP_JSON_CONF_SECRET_ARN"
+      value = var.SHIBBOLETH_SP_JSON_CONF_SECRET_ARN
+    }
+
+    environment_variable {
       name  = "SHIBBOLETH_SP_SPOOFKEY_SECRET_ARN"
       value = var.SHIBBOLETH_SP_SPOOFKEY_SECRET_ARN
     }

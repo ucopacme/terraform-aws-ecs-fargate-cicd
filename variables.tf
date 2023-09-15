@@ -161,6 +161,12 @@ variable "SHIBBOLETH_SP_SPOOFKEY_SECRET_ARN" {
   default     = ""
 }
 
+variable "SHIBBOLETH_SP_JSON_CONF_SECRET_ARN" {
+  description = "Environment variable for consumption in CodeBuild"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
   default = "us-west-2"
 }

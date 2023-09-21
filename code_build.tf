@@ -149,6 +149,11 @@ resource "aws_codebuild_project" "this" {
     }
 
     environment_variable {
+      name  = "SHIBBOLETH_SP_BACKEND_AJP_SECRET_ARN"
+      value = var.SHIBBOLETH_SP_BACKEND_AJP_SECRET_ARN
+    }
+
+    environment_variable {
       name  = "SHIBBOLETH_SP_JSON_CERTS_SECRET_ARN"
       value = var.SHIBBOLETH_SP_JSON_CERTS_SECRET_ARN
     }

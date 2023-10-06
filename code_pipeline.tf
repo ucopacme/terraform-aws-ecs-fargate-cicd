@@ -219,12 +219,29 @@ data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
   }
 }
 
+data "aws_iam_policy_document" "pipeline_kms" {
+  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
+  statement {
+    sid       = "AllowKMSActions"
+    effect    = "Allow"
+    resources = [var.codepipeline_kms_key_arn]
+
+    actions = [
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "kms:Encrypt",
+      "kms:Decrypt",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "pipeline" {
-  source_policy_documents = var.codepipeline_cross_account_role_arn == null ? [
+  source_policy_documents = (var.codepipeline_cross_account_role_arn == null && var.codepipeline_kms_key_arn == null) ? [
     data.aws_iam_policy_document.pipeline_base.json
   ] : [
     data.aws_iam_policy_document.pipeline_base.json,
-    data.aws_iam_policy_document.pipeline_cross_account_role_assume[0].json
+    data.aws_iam_policy_document.pipeline_cross_account_role_assume[0].json,
+    data.aws_iam_policy_document.pipeline_kms[0].json
   ]
 }
 

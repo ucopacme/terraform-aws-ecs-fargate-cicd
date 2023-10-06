@@ -48,14 +48,14 @@ variable "allowed_s3_bucket_names" {
   default     = ["*"]
 }
 variable "codepipeline_cross_account_ids" {
-  description = "Account IDs that will be granted access to codepipeline bucket"
+  description = "(Optional) account IDs that will be granted access to codepipeline bucket"
   type        = list(string)
   default     = []
 }
-variable "codepipeline_cross_account_role_arns" {
-  description = "Role ARNs that CodePipeline service role will be granted access to assume"
-  type        = list(string)
-  default     = []
+variable "codepipeline_cross_account_role_arn" {
+  description = "(Optional) role ARN that CodePipeline service role will be granted access to assume"
+  type        = string
+  default     = null
 }
 
 variable "listener_arns" {

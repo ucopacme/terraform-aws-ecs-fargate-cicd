@@ -213,13 +213,13 @@ data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
   statement {
     sid       = "AllowCrossAccountRoleAssume"
     effect    = "Allow"
-    resources = var.codepipeline_cross_account_role_arns
+    resources = [var.codepipeline_cross_account_role_arn]
     actions   = ["sts:AssumeRole"]
   }
 }
 
 data "aws_iam_policy_document" "pipeline" {
-  source_policy_documents = length(var.codepipeline_cross_account_role_arns) == 0 ? [
+  source_policy_documents = var.codepipeline_cross_account_role_arn == null ? [
     data.aws_iam_policy_document.pipeline_base.json
   ] : [
     data.aws_iam_policy_document.pipeline_base.json,

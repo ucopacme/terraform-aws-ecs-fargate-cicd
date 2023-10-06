@@ -243,6 +243,7 @@ resource "aws_codepipeline" "this" {
 
   stage {
     name = "Source"
+    role_arn = var.codepipeline_cross_account_role_arn
 
     action {
       name             = "Source"

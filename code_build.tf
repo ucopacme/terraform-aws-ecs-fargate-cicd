@@ -17,7 +17,7 @@ resource "aws_iam_role" "codebuild" {
   tags               = var.tags
 }
 
-data "aws_iam_policy_document" "codebuild" {
+data "aws_iam_policy_document" "codebuild_base" {
   statement {
     sid    = "AllowActions"
     effect = "Allow"
@@ -92,6 +92,30 @@ data "aws_iam_policy_document" "codebuild" {
 
     actions = ["logs:PutLogEvents"]
   }
+}
+
+data "aws_iam_policy_document" "codebuild_kms" {
+  statement {
+    sid       = "AllowKMSActions"
+    effect    = "Allow"
+    resources = var.codebuild_kms_key_arns
+
+    actions = [
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "kms:Encrypt",
+      "kms:Decrypt",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "codebuild" {
+  source_policy_documents = length(var.codebuild_kms_key_arns) == 0 ? [
+    data.aws_iam_policy_document.codebuild_base.json
+  ] : [
+    data.aws_iam_policy_document.codebuild_base.json,
+    data.aws_iam_policy_document.codebuild_kms.json
+  ]
 }
 
 resource "aws_iam_role_policy" "codebuild" {

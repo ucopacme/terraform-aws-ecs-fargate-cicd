@@ -58,6 +58,12 @@ variable "codepipeline_cross_account_role_arn" {
   default     = null
 }
 
+variable "codebuild_kms_key_arns" {
+  type        = list(string)
+  description = "(Optional) list of KMS key ARNs that codebuild role will be allowed to access"
+  default     = []
+}
+
 variable "listener_arns" {
   description = "The resource name."
   type        = list(string)

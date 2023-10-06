@@ -95,10 +95,11 @@ data "aws_iam_policy_document" "codebuild_base" {
 }
 
 data "aws_iam_policy_document" "codebuild_kms" {
+  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
   statement {
     sid       = "AllowKMSActions"
     effect    = "Allow"
-    resources = var.codebuild_kms_key_arns
+    resources = [var.codepipeline_kms_key_arn]
 
     actions = [
       "kms:DescribeKey",
@@ -110,11 +111,11 @@ data "aws_iam_policy_document" "codebuild_kms" {
 }
 
 data "aws_iam_policy_document" "codebuild" {
-  source_policy_documents = length(var.codebuild_kms_key_arns) == 0 ? [
+  source_policy_documents = var.codepipeline_kms_key_arn == null ? [
     data.aws_iam_policy_document.codebuild_base.json
   ] : [
     data.aws_iam_policy_document.codebuild_base.json,
-    data.aws_iam_policy_document.codebuild_kms.json
+    data.aws_iam_policy_document.codebuild_kms[0].json
   ]
 }
 

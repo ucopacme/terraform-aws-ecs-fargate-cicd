@@ -17,7 +17,7 @@ resource "aws_iam_role" "codedeploy" {
   tags               = var.tags
 }
 
-data "aws_iam_policy_document" "codedeploy" {
+data "aws_iam_policy_document" "codedeploy_base" {
   statement {
     sid    = "AllowAWSCodeDeployForECS"
     effect = "Allow"
@@ -53,6 +53,31 @@ data "aws_iam_policy_document" "codedeploy" {
       var.task_role == null ? var.execution_role : var.execution_role, var.task_role
     ]
   }
+}
+
+data "aws_iam_policy_document" "codedeploy_kms" {
+  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
+  statement {
+    sid       = "AllowKMSActions"
+    effect    = "Allow"
+    resources = [var.codepipeline_kms_key_arn]
+
+    actions = [
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "kms:Encrypt",
+      "kms:Decrypt",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "codedeploy" {
+  source_policy_documents = var.codepipeline_kms_key_arn == null ? [
+    data.aws_iam_policy_document.codedeploy_base.json
+  ] : [
+    data.aws_iam_policy_document.codedeploy_base.json,
+    data.aws_iam_policy_document.codedeploy_kms[0].json
+  ]
 }
 
 resource "aws_iam_role_policy" "codedeploy" {

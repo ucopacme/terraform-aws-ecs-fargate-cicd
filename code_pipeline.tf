@@ -210,6 +210,7 @@ data "aws_iam_policy_document" "pipeline_base" {
 }
 
 data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
+  count       = var.codepipeline_cross_account_role_arn != null ? 1 : 0
   statement {
     sid       = "AllowCrossAccountRoleAssume"
     effect    = "Allow"
@@ -223,7 +224,7 @@ data "aws_iam_policy_document" "pipeline" {
     data.aws_iam_policy_document.pipeline_base.json
   ] : [
     data.aws_iam_policy_document.pipeline_base.json,
-    data.aws_iam_policy_document.pipeline_cross_account_role_assume.json
+    data.aws_iam_policy_document.pipeline_cross_account_role_assume[0].json
   ]
 }
 

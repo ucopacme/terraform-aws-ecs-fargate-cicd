@@ -240,6 +240,13 @@ resource "aws_codepipeline" "this" {
   artifact_store {
     location = aws_s3_bucket.pipeline.id
     type     = "S3"
+    dynamic "encryption_key" {
+      for_each = var.codepipeline_kms_key_arn[*]
+      content {
+        id    = var.codepipeline_kms_key_arn
+        type  = "KMS"
+      }
+    }
   }
 
   stage {

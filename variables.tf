@@ -57,6 +57,11 @@ variable "codepipeline_cross_account_role_arn" {
   type        = string
   default     = null
 }
+variable "codepipeline_kms_key_arn" {
+  description = "(Optional) ARN of KMS key used to encrypt CodePipeline artifacts uploaded to S3"
+  type        = string
+  default     = null
+}
 
 variable "codebuild_kms_key_arns" {
   type        = list(string)

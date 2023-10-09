@@ -28,3 +28,26 @@ module "eventbridge" {
   }
   tags = var.tags
 }
+
+data "aws_iam_policy_document" "cross_account_put_events" {
+  count       = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
+  statement {
+    sid       = "AllowCrossAccountPutEvents"
+    effect    = "Allow"
+    resources = [for account_id in var.eventbridge_cross_account_ids : "arn:aws:events:us-west-2:${account_id}:event-bus/default"]
+    actions = ["events:PutEvents"]
+  }
+}
+
+resource "aws_iam_policy" "cross_accout_put_events" {
+  count       = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
+  name        = "${var.name}-eventbridge-cross-account"
+  description = "Permissions for ${module.eventbridge.eventbridge_role_name} to put events to other accounts"
+  policy      = data.aws_iam_policy_document.cross_account_put_events[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "cross_accout_put_events" {
+  count      = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
+  role       = module.eventbridge.eventbridge_role_name
+  policy_arn = aws_iam_policy.cross_accout_put_events[0].arn
+}

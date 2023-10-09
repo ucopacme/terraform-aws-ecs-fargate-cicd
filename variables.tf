@@ -62,6 +62,11 @@ variable "codepipeline_kms_key_arn" {
   type        = string
   default     = null
 }
+variable "eventbridge_cross_account_ids" {
+  description = "(Optional) account IDs we allow our eventbridge role to PutEvents to (for triggering cross account pipeline execution)"
+  type        = list(string)
+  default     = []
+}
 
 variable "listener_arns" {
   description = "The resource name."

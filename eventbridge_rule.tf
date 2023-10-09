@@ -55,6 +55,6 @@ resource "aws_iam_role_policy_attachment" "cross_account_put_events" {
 resource "aws_cloudwatch_event_target" "cross_account_targets" {
   for_each = toset(var.eventbridge_cross_account_ids)
   arn      = "arn:aws:events:us-west-2:${each.key}:event-bus/default"
-  rule     = module.eventbridge.eventbridge_rule_ids[0]
+  rule     = module.eventbridge.eventbridge_rule_ids["Eventbridge"]
   role_arn = module.eventbridge.eventbridge_role_arn
 }

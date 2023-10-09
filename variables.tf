@@ -27,11 +27,6 @@ variable "branchname" {
   type        = string
   default     = null
 }
-variable "cross_account_branchname" {
-  description = "The resource name."
-  type        = string
-  default     = null
-}
 variable "execution_role" {
   description = "The resource name."
   type        = string

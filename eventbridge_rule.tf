@@ -52,9 +52,18 @@ resource "aws_iam_role_policy_attachment" "cross_account_put_events" {
   policy_arn = aws_iam_policy.cross_account_put_events[0].arn
 }
 
+resource "aws_cloudwatch_event_rule" "cross_account" {
+  count       = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
+  name        = "${var.name}-eventbridge-cross-account"
+  description = "Trigger for cross-account codepipeline"
+
+  event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
+      "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.cross_account_branchname] } })
+}
+
 resource "aws_cloudwatch_event_target" "cross_account_targets" {
   for_each = toset(var.eventbridge_cross_account_ids)
   arn      = "arn:aws:events:us-west-2:${each.key}:event-bus/default"
-  rule     = module.eventbridge.eventbridge_rule_ids["Eventbridge"]
+  rule     = aws_cloudwatch_event_rule.cross_account[0].id
   role_arn = module.eventbridge.eventbridge_role_arn
 }

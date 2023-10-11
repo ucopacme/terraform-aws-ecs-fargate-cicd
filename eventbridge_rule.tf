@@ -59,6 +59,7 @@ resource "aws_cloudwatch_event_rule" "cross_account" {
 
   event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
       "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.cross_account_branchname] } })
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "cross_account_targets" {

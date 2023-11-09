@@ -67,6 +67,10 @@ variable "codepipeline_kms_key_arn" {
   type        = string
   default     = null
 }
+variable "codepipeline_name" {
+  type       = string
+  default    = ""
+}
 variable "eventbridge_cross_account_ids" {
   description = "(Optional) account IDs we allow our eventbridge role to PutEvents to (for triggering cross account pipeline execution)"
   type        = list(string)

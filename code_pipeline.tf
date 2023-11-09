@@ -1,5 +1,9 @@
+locals {
+  codepipeline_name = var.codepipeline_name != "" ? var.codepipeline_name : var.name
+}
+
 resource "aws_s3_bucket" "pipeline" {
-  bucket = "${var.name}-codepipeline-bucket"
+  bucket = "${local.codepipeline_name}-codepipeline-bucket"
   tags   = var.tags
 }
 
@@ -118,7 +122,7 @@ data "aws_iam_policy_document" "assume_by_pipeline" {
 }
 
 resource "aws_iam_role" "pipeline" {
-  name               = "${var.name}-pipeline-ecs-service-role"
+  name               = "${local.codepipeline_name}-pipeline-ecs-service-role"
   assume_role_policy = data.aws_iam_policy_document.assume_by_pipeline.json
   tags               = var.tags
 }
@@ -251,7 +255,7 @@ resource "aws_iam_role_policy" "pipeline" {
 }
 
 resource "aws_codepipeline" "this" {
-  name     = "${var.name}-pipeline"
+  name     = "${local.codepipeline_name}-pipeline"
   role_arn = aws_iam_role.pipeline.arn
 
   artifact_store {
@@ -315,8 +319,8 @@ resource "aws_codepipeline" "this" {
       version         = "1"
 
       configuration = {
-        ApplicationName                = "${var.name}-service-deploy"
-        DeploymentGroupName            = "${var.name}-service-deploy-group"
+        ApplicationName                = "${local.codepipeline_name}-service-deploy"
+        DeploymentGroupName            = "${local.codepipeline_name}-service-deploy-group"
         Image1ArtifactName             = "BuildArtifact"
         Image1ContainerName            = "IMAGE1_NAME"
         TaskDefinitionTemplateArtifact = "BuildArtifact"

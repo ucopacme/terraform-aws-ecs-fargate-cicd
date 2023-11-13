@@ -320,7 +320,7 @@ resource "aws_codepipeline" "this" {
 
       configuration = {
         ApplicationName                = aws_codedeploy_app.this.name
-        DeploymentGroupName            = aws_codedeploy_deployment_group.this.id
+        DeploymentGroupName            = aws_codedeploy_deployment_group.this.deployment_group_name
         Image1ArtifactName             = "BuildArtifact"
         Image1ContainerName            = "IMAGE1_NAME"
         TaskDefinitionTemplateArtifact = "BuildArtifact"

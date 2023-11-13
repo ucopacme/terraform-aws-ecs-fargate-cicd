@@ -25,6 +25,7 @@ data "aws_iam_policy_document" "codebuild_base" {
     actions = [
       "ecr:GetAuthorizationToken",
       "secretsmanager:GetSecretValue",
+      "ssm:GetParameter",
       "ssm:GetParameters",
       "ssmmessages:CreateControlChannel",
       "ssmmessages:CreateDataChannel",

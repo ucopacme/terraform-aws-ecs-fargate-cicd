@@ -319,8 +319,8 @@ resource "aws_codepipeline" "this" {
       version         = "1"
 
       configuration = {
-        ApplicationName                = "${var.name}-service-deploy"
-        DeploymentGroupName            = "${var.name}-service-deploy-group"
+        ApplicationName                = aws_codedeploy_app.this.name
+        DeploymentGroupName            = aws_codedeploy_deployment_group.this.id
         Image1ArtifactName             = "BuildArtifact"
         Image1ContainerName            = "IMAGE1_NAME"
         TaskDefinitionTemplateArtifact = "BuildArtifact"

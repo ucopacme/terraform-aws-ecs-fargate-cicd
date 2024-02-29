@@ -192,6 +192,12 @@ variable "SHIBBOLETH_SP_JSON_CONF_SECRET_ARN" {
   default     = ""
 }
 
+variable "cloudwatch_event_rule_state" {
+  description = "State of event rules that trigger CodePipline. Set to DISABLED if commits should not trigger the pipeline."
+  type        = string
+  default     = "ENABLED"
+}
+
 variable "region" {
   default = "us-west-2"
 }

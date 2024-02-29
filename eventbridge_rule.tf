@@ -1,6 +1,6 @@
 ## EventBridge rule to trigger the pipeline
 module "eventbridge" {
-  source                 = "git::https://git@github.com/ucopacme/terraform-aws-eventbridge//?ref=v0.0.1"
+  source                 = "git::https://git@github.com/ucopacme/terraform-aws-eventbridge//?ref=v0.0.2"
   pipeline_arn           = aws_codepipeline.this.arn
   create_bus             = false
   create_role            = true
@@ -9,6 +9,7 @@ module "eventbridge" {
   rules = {
     Eventbridge = {
       description = "Trigger for a codepipeline"
+      state = var.cloudwatch_event_rule_state
       event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
       "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.branchname] } })
     }
@@ -56,6 +57,7 @@ resource "aws_cloudwatch_event_rule" "cross_account" {
   count       = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
   name        = "${var.name}-eventbridge-cross-account"
   description = "Trigger for cross-account codepipeline"
+  state       = var.cloudwatch_event_rule_state
 
   event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
       "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.cross_account_branchname] } })

@@ -68,8 +68,9 @@ variable "codepipeline_kms_key_arn" {
   default     = null
 }
 variable "codepipeline_name" {
-  type       = string
-  default    = ""
+  description = "(Optional) custom name for pipeline"
+  type        = string
+  default     = ""
 }
 variable "eventbridge_cross_account_ids" {
   description = "(Optional) account IDs we allow our eventbridge role to PutEvents to (for triggering cross account pipeline execution)"
@@ -108,6 +109,18 @@ variable "compute_type" {
   description = "The resource name."
   type        = string
   default     = "BUILD_GENERAL1_SMALL"
+}
+
+variable "codebuild_name" {
+  description = "(Optional) custom name for CodeBuild project"
+  type        = string
+  default     = ""
+}
+
+variable "codebuild_description" {
+  description = "(Optional) description for CodeBuild project"
+  type        = string
+  default     = ""
 }
 
 variable "codebuild_image" {

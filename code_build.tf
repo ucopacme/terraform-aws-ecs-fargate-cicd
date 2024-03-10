@@ -1,3 +1,8 @@
+locals {
+  codebuild_name        = var.codebuild_name != "" ? var.codebuild_name : var.name
+  codebuild_description = var.codebuild_description != "" ? var.codebuild_description : "Codebuild for the ECS Green/Blue ${var.name} app"
+}
+
 data "aws_iam_policy_document" "assume_by_codebuild" {
   statement {
     sid     = "AllowAssumeByCodebuild"
@@ -12,7 +17,7 @@ data "aws_iam_policy_document" "assume_by_codebuild" {
 }
 
 resource "aws_iam_role" "codebuild" {
-  name               = "${var.name}-codebuild"
+  name               = "${local.codebuild_name}-codebuild"
   assume_role_policy = data.aws_iam_policy_document.assume_by_codebuild.json
   tags               = var.tags
 }
@@ -126,8 +131,8 @@ resource "aws_iam_role_policy" "codebuild" {
 }
 
 resource "aws_codebuild_project" "this" {
-  name         = "${var.name}-codebuild"
-  description  = "Codebuild for the ECS Green/Blue ${var.name} app"
+  name         = "${local.codebuild_name}-codebuild"
+  description  = local.description
   service_role = aws_iam_role.codebuild.arn
 
   artifacts {

@@ -27,6 +27,7 @@ data "aws_iam_policy_document" "codedeploy_base" {
       "ecs:CreateTaskSet",
       "ecs:DeleteTaskSet",
       "ecs:DescribeServices",
+      "ecs:TagResource",
       "ecs:UpdateServicePrimaryTaskSet",
       "elasticloadbalancing:DescribeListeners",
       "elasticloadbalancing:DescribeRules",

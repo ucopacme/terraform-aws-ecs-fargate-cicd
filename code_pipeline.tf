@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "pipeline" {
-  bucket = "${local.codepipeline_name}-codepipeline-bucket"
+  bucket = lower("${local.codepipeline_name}-codepipeline-bucket")
   tags   = var.tags
 }
 

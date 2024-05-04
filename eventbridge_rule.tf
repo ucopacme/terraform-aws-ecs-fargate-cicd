@@ -6,6 +6,7 @@ module "eventbridge" {
   create_role            = true
   attach_pipeline_policy = true
   role_name              = "${var.name}-eventbridge"
+  trusted_entities       = ["scheduler.amazonaws.com"]
   rules = {
     Eventbridge = {
       description = "Trigger for a codepipeline"

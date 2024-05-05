@@ -1,6 +1,6 @@
 ## EventBridge rule to trigger the pipeline
 module "eventbridge" {
-  source                 = "git::https://git@github.com/ucopacme/terraform-aws-eventbridge//?ref=v0.0.2"
+  source                 = "git::https://git@github.com/ucopacme/terraform-aws-eventbridge//?ref=v0.0.3"
   pipeline_arn           = aws_codepipeline.this.arn
   create_bus             = false
   create_role            = true

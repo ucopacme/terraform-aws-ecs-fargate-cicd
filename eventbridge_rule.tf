@@ -71,3 +71,27 @@ resource "aws_cloudwatch_event_target" "cross_account_targets" {
   rule     = aws_cloudwatch_event_rule.cross_account[0].id
   role_arn = module.eventbridge.eventbridge_role_arn
 }
+
+resource "aws_scheduler_schedule" "pipeline_schedule" {
+  name        = "${var.name}-pipeline"
+  count       = var.pipeline_schedule_expression != null ? 1 : 0
+  description = "trigger ${var.name} pipeline on a schedule"
+  group_name  = "default"
+
+  flexible_time_window {
+    mode                      = var.pipeline_schedule_maximum_window_in_minutes == null ? "OFF" : "FLEXIBLE"
+    maximum_window_in_minutes = var.pipeline_schedule_maximum_window_in_minutes
+  }
+
+  schedule_expression          = var.pipeline_schedule_expression
+  schedule_expression_timezone = var.pipeline_schedule_expression_timezone
+
+  target {
+    arn      = aws_codepipeline.this.arn
+    role_arn = module.eventbridge.eventbridge_role_arn
+    retry_policy {
+      maximum_event_age_in_seconds = 86400
+      maximum_retry_attempts = 0
+    }
+  }
+}

@@ -211,9 +211,28 @@ variable "cloudwatch_event_rule_state" {
   default     = "ENABLED"
 }
 
+variable "pipeline_schedule_expression" {
+  description = "(Optional) schedule expression for automatically triggering pipeline"
+  type        = string
+  default     = null
+}
+
+variable "pipeline_schedule_expression_timezone" {
+  description = "(Optional) timezone associated with pipeline_schedule_expression"
+  type        = string
+  default     = "America/Los_Angeles"
+}
+
+variable "pipeline_schedule_maximum_window_in_minutes" {
+  description = "(Optional) maximum time window during which a schedule can be invoked"
+  type        = string
+  default     = null
+}
+
 variable "region" {
   default = "us-west-2"
 }
+
 variable "tags" {
   default     = {}
   description = "A map of tags to add to all resources"

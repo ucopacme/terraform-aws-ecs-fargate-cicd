@@ -220,7 +220,7 @@ variable "pipeline_schedule_expression" {
 variable "pipeline_schedule_expression_timezone" {
   description = "(Optional) timezone associated with pipeline_schedule_expression"
   type        = string
-  default     = "America/Los_Angeles"
+  default     = "US/Pacific"
 }
 
 variable "pipeline_schedule_maximum_window_in_minutes" {

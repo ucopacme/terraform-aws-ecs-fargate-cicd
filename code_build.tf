@@ -181,6 +181,11 @@ resource "aws_codebuild_project" "this" {
     }
 
     environment_variable {
+      name  = "APACHESHIB_HOST"
+      value = var.APACHESHIB_HOST
+    }
+
+    environment_variable {
       name  = "SHIBBOLETH_SP_BACKEND_AJP_SECRET_ARN"
       value = var.SHIBBOLETH_SP_BACKEND_AJP_SECRET_ARN
     }

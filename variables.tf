@@ -181,6 +181,12 @@ variable "TASK_MEMORY" {
   default     = ""
 }
 
+variable "APACHESHIB_HOST" {
+  description = "Environment variable for consumption in CodeBuild"
+  type        = string
+  default     = ""
+}
+
 variable "SHIBBOLETH_SP_BACKEND_AJP_SECRET_ARN" {
   description = "Environment variable for consumption in CodeBuild"
   type        = string

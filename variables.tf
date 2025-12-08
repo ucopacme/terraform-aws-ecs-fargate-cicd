@@ -244,3 +244,9 @@ variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
 }
+
+variable "EXTRA_ENV_VARS" {
+  description = "Additional environment variables to pass to CodeBuild"
+  type        = map(string)
+  default     = {}
+}

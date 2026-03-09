@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "codedeploy_base" {
 }
 
 data "aws_iam_policy_document" "codedeploy_kms" {
-  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
+  count = var.codepipeline_kms_key_arn != null ? 1 : 0
   statement {
     sid       = "AllowKMSActions"
     effect    = "Allow"
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "codedeploy_kms" {
 data "aws_iam_policy_document" "codedeploy" {
   source_policy_documents = var.codepipeline_kms_key_arn == null ? [
     data.aws_iam_policy_document.codedeploy_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.codedeploy_base.json,
     data.aws_iam_policy_document.codedeploy_kms[0].json
   ]

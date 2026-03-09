@@ -10,7 +10,7 @@ module "eventbridge" {
   rules = {
     Eventbridge = {
       description = "Trigger for a codepipeline"
-      state = var.cloudwatch_event_rule_state
+      state       = var.cloudwatch_event_rule_state
       event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
       "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.branchname] } })
     }
@@ -32,12 +32,12 @@ module "eventbridge" {
 
 # The resources below created/used only for cross-account pipelines.
 data "aws_iam_policy_document" "cross_account_put_events" {
-  count       = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
+  count = length(var.eventbridge_cross_account_ids) != 0 ? 1 : 0
   statement {
     sid       = "AllowCrossAccountPutEvents"
     effect    = "Allow"
     resources = [for account_id in var.eventbridge_cross_account_ids : "arn:aws:events:us-west-2:${account_id}:event-bus/default"]
-    actions = ["events:PutEvents"]
+    actions   = ["events:PutEvents"]
   }
 }
 
@@ -61,7 +61,7 @@ resource "aws_cloudwatch_event_rule" "cross_account" {
   state       = var.cloudwatch_event_rule_state
 
   event_pattern = jsonencode({ "source" : ["aws.codecommit"], "detail-type" : ["CodeCommit Repository State Change"], "resources" : [var.repository_arn], "detail" : {
-      "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.cross_account_branchname] } })
+  "event" : ["referenceCreated", "referenceUpdated"], "referenceType" : ["branch"], "referenceName" : [var.cross_account_branchname] } })
   tags = var.tags
 }
 
@@ -91,7 +91,7 @@ resource "aws_scheduler_schedule" "pipeline_schedule" {
     role_arn = module.eventbridge.eventbridge_role_arn
     retry_policy {
       maximum_event_age_in_seconds = 86400
-      maximum_retry_attempts = 0
+      maximum_retry_attempts       = 0
     }
   }
 }

@@ -1,9 +1,10 @@
 locals {
-  codepipeline_name = var.codepipeline_name != "" ? var.codepipeline_name : var.name
+  codepipeline_name    = var.codepipeline_name != "" ? var.codepipeline_name : var.name
+  pipeline_bucket_name = var.codepipeline_bucket_name != "" ? var.codepipeline_bucket_name : lower("${local.codepipeline_name}-codepipeline-bucket")
 }
 
 resource "aws_s3_bucket" "pipeline" {
-  bucket = lower("${local.codepipeline_name}-codepipeline-bucket")
+  bucket = local.pipeline_bucket_name
   tags   = var.tags
 }
 
@@ -67,7 +68,7 @@ data "aws_iam_policy_document" "pipeline_bucket_cross_account" {
     sid       = "AllowCrossAccountObjectActions"
     effect    = "Allow"
     resources = ["${aws_s3_bucket.pipeline.arn}/*"]
-    actions   = [
+    actions = [
       "s3:GetObject",
       "s3:PutObject"
     ]
@@ -94,7 +95,7 @@ data "aws_iam_policy_document" "pipeline_bucket_cross_account" {
 data "aws_iam_policy_document" "pipeline_bucket_policy" {
   source_policy_documents = length(var.codepipeline_cross_account_ids) == 0 ? [
     data.aws_iam_policy_document.pipeline_bucket_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.pipeline_bucket_base.json,
     data.aws_iam_policy_document.pipeline_bucket_cross_account.json
   ]
@@ -214,7 +215,7 @@ data "aws_iam_policy_document" "pipeline_base" {
 }
 
 data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
-  count       = var.codepipeline_cross_account_role_arn != null ? 1 : 0
+  count = var.codepipeline_cross_account_role_arn != null ? 1 : 0
   statement {
     sid       = "AllowCrossAccountRoleAssume"
     effect    = "Allow"
@@ -224,7 +225,7 @@ data "aws_iam_policy_document" "pipeline_cross_account_role_assume" {
 }
 
 data "aws_iam_policy_document" "pipeline_kms" {
-  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
+  count = var.codepipeline_kms_key_arn != null ? 1 : 0
   statement {
     sid       = "AllowKMSActions"
     effect    = "Allow"
@@ -242,7 +243,7 @@ data "aws_iam_policy_document" "pipeline_kms" {
 data "aws_iam_policy_document" "pipeline" {
   source_policy_documents = (var.codepipeline_cross_account_role_arn == null && var.codepipeline_kms_key_arn == null) ? [
     data.aws_iam_policy_document.pipeline_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.pipeline_base.json,
     data.aws_iam_policy_document.pipeline_cross_account_role_assume[0].json,
     data.aws_iam_policy_document.pipeline_kms[0].json
@@ -264,8 +265,8 @@ resource "aws_codepipeline" "this" {
     dynamic "encryption_key" {
       for_each = var.codepipeline_kms_key_arn[*]
       content {
-        id    = var.codepipeline_kms_key_arn
-        type  = "KMS"
+        id   = var.codepipeline_kms_key_arn
+        type = "KMS"
       }
     }
   }

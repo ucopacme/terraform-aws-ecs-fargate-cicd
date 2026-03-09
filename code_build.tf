@@ -42,9 +42,9 @@ data "aws_iam_policy_document" "codebuild_base" {
   }
 
   statement {
-    sid    = "AllowS3BucketActions"
-    effect = "Allow"
-    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [ for bucket in concat([aws_s3_bucket.pipeline.id], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}" ]
+    sid       = "AllowS3BucketActions"
+    effect    = "Allow"
+    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [for bucket in concat([aws_s3_bucket.pipeline.id], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}"]
 
     actions = [
       "s3:ListBucket",
@@ -52,9 +52,9 @@ data "aws_iam_policy_document" "codebuild_base" {
   }
 
   statement {
-    sid    = "AllowS3ObjectActions"
-    effect = "Allow"
-    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [ for bucket in concat([aws_s3_bucket.pipeline.id], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}/*" ]
+    sid       = "AllowS3ObjectActions"
+    effect    = "Allow"
+    resources = contains(var.allowed_s3_bucket_names, "*") ? ["*"] : [for bucket in concat([aws_s3_bucket.pipeline.id], var.allowed_s3_bucket_names) : "arn:aws:s3:::${bucket}/*"]
 
     actions = [
       "s3:GetObject",
@@ -64,8 +64,8 @@ data "aws_iam_policy_document" "codebuild_base" {
   }
 
   statement {
-    sid    = "AllowECR"
-    effect = "Allow"
+    sid       = "AllowECR"
+    effect    = "Allow"
     resources = var.ecr_repository_arns
 
     actions = [
@@ -81,8 +81,8 @@ data "aws_iam_policy_document" "codebuild_base" {
   }
 
   statement {
-    sid    = "AllowCloudWatchLogsCreateLogGroupsAndLogStreams"
-    effect = "Allow"
+    sid       = "AllowCloudWatchLogsCreateLogGroupsAndLogStreams"
+    effect    = "Allow"
     resources = ["arn:aws:logs:*:*:log-group:/aws/codebuild/*"]
 
     actions = [
@@ -92,8 +92,8 @@ data "aws_iam_policy_document" "codebuild_base" {
   }
 
   statement {
-    sid    = "AllowCloudWatchLogsPutLogEvents"
-    effect = "Allow"
+    sid       = "AllowCloudWatchLogsPutLogEvents"
+    effect    = "Allow"
     resources = ["arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"]
 
     actions = ["logs:PutLogEvents"]
@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "codebuild_base" {
 }
 
 data "aws_iam_policy_document" "codebuild_kms" {
-  count       = var.codepipeline_kms_key_arn != null ? 1 : 0
+  count = var.codepipeline_kms_key_arn != null ? 1 : 0
   statement {
     sid       = "AllowKMSActions"
     effect    = "Allow"
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "codebuild_kms" {
 data "aws_iam_policy_document" "codebuild" {
   source_policy_documents = var.codepipeline_kms_key_arn == null ? [
     data.aws_iam_policy_document.codebuild_base.json
-  ] : [
+    ] : [
     data.aws_iam_policy_document.codebuild_base.json,
     data.aws_iam_policy_document.codebuild_kms[0].json
   ]
@@ -239,9 +239,9 @@ resource "aws_codebuild_project" "this" {
     buildspec = "buildspec.yml"
   }
 
-#  lifecycle {
-#    ignore_changes = [environment]
-#  }
+  #  lifecycle {
+  #    ignore_changes = [environment]
+  #  }
 
   tags = var.tags
 }

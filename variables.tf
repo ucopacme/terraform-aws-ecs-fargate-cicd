@@ -1,6 +1,6 @@
 variable "name" {
-  type       = string
-  default     = "cluster"
+  type    = string
+  default = "cluster"
 }
 variable "privileged_mode" {
   default     = true
@@ -249,4 +249,10 @@ variable "EXTRA_ENV_VARS" {
   description = "Additional environment variables to pass to CodeBuild"
   type        = map(string)
   default     = {}
+}
+
+variable "codepipeline_bucket_name" {
+  description = "Custom S3 bucket name for CodePipeline artifact store"
+  type        = string
+  default     = ""
 }

@@ -158,18 +158,22 @@ data "aws_iam_policy_document" "pipeline_base" {
     ]
   }
 
-  statement {
-    effect    = "Allow"
-    resources = ["*"]
+  # Only included when codedeploy = true
+  dynamic "statement" {
+    for_each = var.codedeploy ? [1] : []
+    content {
+      effect    = "Allow"
+      resources = ["*"]
 
-    actions = [
-      "codedeploy:CreateDeployment",
-      "codedeploy:GetApplication",
-      "codedeploy:GetApplicationRevision",
-      "codedeploy:GetDeployment",
-      "codedeploy:GetDeploymentConfig",
-      "codedeploy:RegisterApplicationRevision",
-    ]
+      actions = [
+        "codedeploy:CreateDeployment",
+        "codedeploy:GetApplication",
+        "codedeploy:GetApplicationRevision",
+        "codedeploy:GetDeployment",
+        "codedeploy:GetDeploymentConfig",
+        "codedeploy:RegisterApplicationRevision",
+      ]
+    }
   }
 
   statement {
@@ -308,28 +312,33 @@ resource "aws_codepipeline" "this" {
     }
   }
 
-  stage {
-    name = "Deploy"
+  # Deploy stage only created when codedeploy = true
+  dynamic "stage" {
+    for_each = var.codedeploy ? [1] : []
+    content {
+      name = "Deploy"
 
-    action {
-      name            = "blue-green"
-      category        = "Deploy"
-      owner           = "AWS"
-      provider        = "CodeDeployToECS"
-      input_artifacts = ["BuildArtifact"]
-      version         = "1"
+      action {
+        name            = "blue-green"
+        category        = "Deploy"
+        owner           = "AWS"
+        provider        = "CodeDeployToECS"
+        input_artifacts = ["BuildArtifact"]
+        version         = "1"
 
-      configuration = {
-        ApplicationName                = aws_codedeploy_app.this.name
-        DeploymentGroupName            = aws_codedeploy_deployment_group.this.deployment_group_name
-        Image1ArtifactName             = "BuildArtifact"
-        Image1ContainerName            = "IMAGE1_NAME"
-        TaskDefinitionTemplateArtifact = "BuildArtifact"
-        TaskDefinitionTemplatePath     = "taskdef.json"
-        AppSpecTemplateArtifact        = "BuildArtifact"
-        AppSpecTemplatePath            = "appspec.yaml"
+        configuration = {
+          ApplicationName                = aws_codedeploy_app.this[0].name
+          DeploymentGroupName            = aws_codedeploy_deployment_group.this[0].deployment_group_name
+          Image1ArtifactName             = "BuildArtifact"
+          Image1ContainerName            = "IMAGE1_NAME"
+          TaskDefinitionTemplateArtifact = "BuildArtifact"
+          TaskDefinitionTemplatePath     = "taskdef.json"
+          AppSpecTemplateArtifact        = "BuildArtifact"
+          AppSpecTemplatePath            = "appspec.yaml"
+        }
       }
     }
   }
+
   tags = var.tags
 }

@@ -1,9 +1,10 @@
 data "aws_iam_policy_document" "assume_by_codedeploy" {
+  count = var.codedeploy ? 1 : 0
+
   statement {
     sid     = ""
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
-
     principals {
       type        = "Service"
       identifiers = ["codedeploy.amazonaws.com"]
@@ -12,12 +13,15 @@ data "aws_iam_policy_document" "assume_by_codedeploy" {
 }
 
 resource "aws_iam_role" "codedeploy" {
+  count              = var.codedeploy ? 1 : 0
   name               = "${var.name}-codedeploy"
-  assume_role_policy = data.aws_iam_policy_document.assume_by_codedeploy.json
+  assume_role_policy = data.aws_iam_policy_document.assume_by_codedeploy[0].json
   tags               = var.tags
 }
 
 data "aws_iam_policy_document" "codedeploy_base" {
+  count = var.codedeploy ? 1 : 0
+
   statement {
     sid    = "AllowAWSCodeDeployForECS"
     effect = "Allow"
@@ -44,9 +48,8 @@ data "aws_iam_policy_document" "codedeploy_base" {
   }
 
   statement {
-    sid    = "AllowPassRole"
-    effect = "Allow"
-
+    sid     = "AllowPassRole"
+    effect  = "Allow"
     actions = ["iam:PassRole"]
 
     # Initial revision of this module used the execution role for the task role.
@@ -57,7 +60,8 @@ data "aws_iam_policy_document" "codedeploy_base" {
 }
 
 data "aws_iam_policy_document" "codedeploy_kms" {
-  count = var.codepipeline_kms_key_arn != null ? 1 : 0
+  count = var.codedeploy && var.codepipeline_kms_key_arn != null ? 1 : 0
+
   statement {
     sid       = "AllowKMSActions"
     effect    = "Allow"
@@ -73,30 +77,35 @@ data "aws_iam_policy_document" "codedeploy_kms" {
 }
 
 data "aws_iam_policy_document" "codedeploy" {
+  count = var.codedeploy ? 1 : 0
+
   source_policy_documents = var.codepipeline_kms_key_arn == null ? [
-    data.aws_iam_policy_document.codedeploy_base.json
+    data.aws_iam_policy_document.codedeploy_base[0].json
     ] : [
-    data.aws_iam_policy_document.codedeploy_base.json,
+    data.aws_iam_policy_document.codedeploy_base[0].json,
     data.aws_iam_policy_document.codedeploy_kms[0].json
   ]
 }
 
 resource "aws_iam_role_policy" "codedeploy" {
-  role   = aws_iam_role.codedeploy.name
-  policy = data.aws_iam_policy_document.codedeploy.json
+  count  = var.codedeploy ? 1 : 0
+  role   = aws_iam_role.codedeploy[0].name
+  policy = data.aws_iam_policy_document.codedeploy[0].json
 }
 
 resource "aws_codedeploy_app" "this" {
+  count            = var.codedeploy ? 1 : 0
   compute_platform = "ECS"
   name             = "${var.name}-service-deploy"
   tags             = var.tags
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
-  app_name               = aws_codedeploy_app.this.name
+  count                  = var.codedeploy ? 1 : 0
+  app_name               = aws_codedeploy_app.this[0].name
   deployment_group_name  = "${var.name}-service-deploy-group"
   deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
-  service_role_arn       = aws_iam_role.codedeploy.arn
+  service_role_arn       = aws_iam_role.codedeploy[0].arn
 
   blue_green_deployment_config {
     deployment_ready_option {
@@ -127,16 +136,13 @@ resource "aws_codedeploy_deployment_group" "this" {
 
       target_group {
         name = var.target_group_0
-        # name = "${aws_lb_target_group.blue.name}"
       }
 
       target_group {
         name = var.target_group_1
-        # name = "${aws_lb_target_group.green.name}"
       }
-
     }
-    # lifecycle { ignore_changes = [blue_green_deployment_config] }
   }
+
   tags = var.tags
 }

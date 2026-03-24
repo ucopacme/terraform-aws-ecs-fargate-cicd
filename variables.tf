@@ -256,3 +256,9 @@ variable "codepipeline_bucket_name" {
   type        = string
   default     = ""
 }
+
+variable "codedeploy" {
+  description = "Whether to create CodeDeploy resources and the Deploy stage in the pipeline. Set to false for build-only pipelines."
+  type        = bool
+  default     = true
+}
